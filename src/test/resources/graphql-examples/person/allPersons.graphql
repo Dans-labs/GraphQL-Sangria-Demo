@@ -1,0 +1,12 @@
+query {
+    persons {
+        personId
+        name
+        birthday
+        place
+        works {
+            id
+            title
+        }
+    }
+}

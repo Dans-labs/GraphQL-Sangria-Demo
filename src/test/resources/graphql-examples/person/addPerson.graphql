@@ -1,0 +1,7 @@
+mutation {
+    addPerson(person: {name: "Foo", place: "bar", birthday: "1994-03-03"}) {
+        name
+        place
+        birthday
+    }
+}

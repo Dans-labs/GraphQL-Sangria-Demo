@@ -1,0 +1,76 @@
+"""The person to be inserted."""
+input InputPerson {
+  """The person's name."""
+  name: String!
+
+  """The date the person was born."""
+  birthday: LocalDate!
+
+  """The city/town where this person lives."""
+  place: String!
+}
+
+"""The work to be inserted."""
+input InputWork {
+  """The work's title."""
+  title: String!
+}
+
+"""A LocalDate scalar type represents textual data."""
+scalar LocalDate
+
+type Mutation {
+  """Add a person to the service."""
+  addPerson(
+    """The person to be inserted."""
+    person: InputPerson!
+  ): Person!
+  addWork(work: InputWork!, personIds: [UUID!]!): Work!
+}
+
+"""The object containing data about the person."""
+type Person {
+  """The identifier with which this person is associated."""
+  personId: UUID!
+
+  """The person's name."""
+  name: String!
+
+  """The date the person was born."""
+  birthday: LocalDate!
+
+  """The city/town where this person lives."""
+  place: String!
+
+  """List all works of this person."""
+  works: [Work!]
+}
+
+type Query {
+  """List all known persons."""
+  persons: [Person!]!
+
+  """Find the person identified with the given identifier."""
+  person(
+    """The identifier of the person to be found."""
+    id: UUID!
+  ): Person
+}
+
+"""
+The UUID scalar type represents textual data, formatted as a universally unique identifier.
+"""
+scalar UUID
+
+"""The object containing data about the work."""
+type Work {
+  """The identifier with which this work is associated."""
+  id: UUID!
+
+  """The work's title."""
+  title: String!
+
+  """List all authors of this work."""
+  authors: [Person!]!
+}
+
