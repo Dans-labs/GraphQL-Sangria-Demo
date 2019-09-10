@@ -1,0 +1,18 @@
+[Unit]
+Description=GRAPHQL Sangria Demo Service
+
+[Service]
+ExecStart=/bin/java \
+   $INITIAL_HEAP_SIZE \
+   -Dlogback.configurationFile=/etc/opt/dans.knaw.nl/graphql-sangria-demo/logback-service.xml \
+   -Dapp.home=/opt/dans.knaw.nl/graphql-sangria-demo \
+   -Dorg.scalatra.environment="production" \
+   -jar /opt/dans.knaw.nl/graphql-sangria-demo/bin/graphql-sangria-demo.jar run-service
+# Java returns 143 even if the SIGTERM was handled correctly.
+SuccessExitStatus=143
+
+User=graphql-sangria-demo
+Group=graphql-sangria-demo
+
+[Install]
+WantedBy=multi-user.target
