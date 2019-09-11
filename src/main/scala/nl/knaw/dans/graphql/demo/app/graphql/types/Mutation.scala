@@ -26,7 +26,7 @@ class Mutation {
   @GraphQLDescription("Add a person to the service.")
   def addPerson(@GraphQLDescription("The person to be inserted.") person: InputPerson)
                (implicit ctx: Context[DataContext, Unit]): GraphQLPerson = {
-    GraphQLPerson(ctx.ctx.repo.personDao.store(person))
+    new GraphQLPerson(ctx.ctx.repo.personDao.store(person))
   }
 
   @GraphQLField
@@ -34,6 +34,6 @@ class Mutation {
   def addWork(@GraphQLDescription("The work's metadata.") work: InputWork,
               @GraphQLDescription("The authors of the work.") authors: Seq[PersonId],
              )(implicit ctx: Context[DataContext, Unit]): GraphQLWork = {
-    GraphQLWork(ctx.ctx.repo.workDao.store(authors, work))
+    new GraphQLWork(ctx.ctx.repo.workDao.store(authors, work))
   }
 }

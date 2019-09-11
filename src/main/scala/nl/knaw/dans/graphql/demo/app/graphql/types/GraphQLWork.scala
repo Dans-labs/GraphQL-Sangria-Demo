@@ -16,16 +16,22 @@
 package nl.knaw.dans.graphql.demo.app.graphql.types
 
 import nl.knaw.dans.graphql.demo.app.graphql.DataContext
-import nl.knaw.dans.graphql.demo.app.graphql.resolvers.{ PersonResolver, WorkResolver }
-import nl.knaw.dans.graphql.demo.app.model.{ PersonId, Work, WorkId }
+import nl.knaw.dans.graphql.demo.app.graphql.resolvers.PersonResolver
+import nl.knaw.dans.graphql.demo.app.model.{ Work, WorkId }
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
-import sangria.schema.{ Context, DeferredValue, SequenceLeafAction }
+import sangria.schema.{ Context, DeferredValue }
 
 @GraphQLName("Work")
 @GraphQLDescription("The object containing data about the work.")
-class GraphQLWork(@GraphQLDescription("The identifier with which this work is associated.") id: WorkId,
-                  @GraphQLDescription("The work's title.") title: String,
-                 ) extends Work(id, title) {
+class GraphQLWork(private val work: Work) {
+
+  @GraphQLField
+  @GraphQLDescription("The identifier with which this work is associated.")
+  def id()(implicit ctx: Context[DataContext, GraphQLWork]): WorkId = ctx.value.work.id
+
+  @GraphQLField
+  @GraphQLDescription("The work's title.")
+  def title()(implicit ctx: Context[DataContext, GraphQLWork]): String = ctx.value.work.title
 
   @GraphQLField
   @GraphQLDescription("List all authors of this work.")
@@ -36,12 +42,6 @@ class GraphQLWork(@GraphQLDescription("The identifier with which this work is as
     val personIds = ctx.ctx.repo.workDao.getPersonsByWork(ctx.value.id).getOrElse(Seq.empty)
 
     PersonResolver.personsById(personIds)
-      .map(_.map(GraphQLPerson(_)))
-  }
-}
-
-object GraphQLWork {
-  def apply(work: Work): GraphQLWork = {
-    new GraphQLWork(work.id, work.title)
+      .map(_.map(new GraphQLPerson(_)))
   }
 }

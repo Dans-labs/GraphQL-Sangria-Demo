@@ -24,22 +24,28 @@ import sangria.schema.{ Context, DeferredValue }
 
 @GraphQLName("Person")
 @GraphQLDescription("The object containing data about the person.")
-class GraphQLPerson(@GraphQLDescription("The identifier with which this person is associated.") personId: PersonId,
-                    @GraphQLDescription("The person's name.") name: String,
-                    @GraphQLDescription("The date the person was born.") birthday: LocalDate,
-                    @GraphQLDescription("The city/town where this person lives.") place: String,
-                   ) extends Person(personId, name, birthday, place) {
+class GraphQLPerson(private val person: Person) {
+
+  @GraphQLField
+  @GraphQLDescription("The identifier with which this person is associated.")
+  def personId()(implicit ctx: Context[DataContext, GraphQLPerson]): PersonId = ctx.value.person.personId
+
+  @GraphQLField
+  @GraphQLDescription("The person's name.")
+  def name()(implicit ctx: Context[DataContext, GraphQLPerson]): String = ctx.value.person.name
+
+  @GraphQLField
+  @GraphQLDescription("The date the person was born.")
+  def birthday()(implicit ctx: Context[DataContext, GraphQLPerson]): LocalDate = ctx.value.person.birthday
+
+  @GraphQLField
+  @GraphQLDescription("The city/town where this person lives.")
+  def place()(implicit ctx: Context[DataContext, GraphQLPerson]): String = ctx.value.person.place
 
   @GraphQLField
   @GraphQLDescription("List all works of this person.")
   def works()(implicit ctx: Context[DataContext, GraphQLPerson]): DeferredValue[DataContext, Option[Seq[GraphQLWork]]] = {
-    WorkResolver.worksByPersonId(ctx.value.personId)
-      .map(_.map(_.map(GraphQLWork(_))))
-  }
-}
-
-object GraphQLPerson {
-  def apply(person: Person): GraphQLPerson = {
-    new GraphQLPerson(person.personId, person.name, person.birthday, person.place)
+    WorkResolver.worksByPersonId(ctx.value.person.personId)
+      .map(_.map(_.map(new GraphQLWork(_))))
   }
 }

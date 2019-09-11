@@ -27,7 +27,7 @@ class Query {
   @GraphQLDescription("List all known persons.")
   def persons()(implicit ctx: Context[DataContext, Unit]): Seq[GraphQLPerson] = {
     ctx.ctx.repo.personDao.getAll
-      .map(GraphQLPerson(_))
+      .map(new GraphQLPerson(_))
   }
 
   @GraphQLField
@@ -35,6 +35,6 @@ class Query {
   def person(@GraphQLDescription("The identifier of the person to be found.") id: PersonId)
             (implicit ctx: Context[DataContext, Unit]): DeferredValue[DataContext, Option[GraphQLPerson]] = {
     PersonResolver.personById(id)
-      .map(_.map(GraphQLPerson(_)))
+      .map(_.map(new GraphQLPerson(_)))
   }
 }
