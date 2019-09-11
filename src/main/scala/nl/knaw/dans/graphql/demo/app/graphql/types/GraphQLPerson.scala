@@ -28,33 +28,33 @@ class GraphQLPerson(private val person: Person) {
 
   @GraphQLField
   @GraphQLDescription("The identifier with which this person is associated.")
-  def personId()(implicit ctx: Context[DataContext, GraphQLPerson]): PersonId = ctx.value.person.personId
+  val personId: PersonId = person.personId
 
   @GraphQLField
   @GraphQLDescription("The person's name.")
-  def name()(implicit ctx: Context[DataContext, GraphQLPerson]): String = ctx.value.person.name
+  val name: String = person.name
 
   @GraphQLField
   @GraphQLDescription("The date the person was born.")
-  def birthday()(implicit ctx: Context[DataContext, GraphQLPerson]): LocalDate = ctx.value.person.birthday
+  val birthday: LocalDate = person.birthday
 
   @GraphQLField
   @GraphQLDescription("The city/town where this person lives.")
-  def place()(implicit ctx: Context[DataContext, GraphQLPerson]): String = ctx.value.person.place
+  val place: String = person.place
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO
 //  @GraphQLField
 //  @GraphQLDescription("List all works of this person.")
-//  def works()(implicit ctx: Context[DataContext, GraphQLPerson]): Option[Seq[GraphQLWork]] = {
-//    ctx.ctx.repo.workDao.getByPersonId(ctx.value.person.personId)
+//  def works(implicit ctx: Context[DataContext, GraphQLPerson]): Option[Seq[GraphQLWork]] = {
+//    ctx.ctx.repo.workDao.getByPersonId(personId)
 //      .map(_.map(new GraphQLWork(_)))
 //  }
 
   @GraphQLField
   @GraphQLDescription("List all works of this person.")
-  def works()(implicit ctx: Context[DataContext, GraphQLPerson]): DeferredValue[DataContext, Option[Seq[GraphQLWork]]] = {
-    WorkResolver.worksByPersonId(ctx.value.person.personId)
+  def works(implicit ctx: Context[DataContext, GraphQLPerson]): DeferredValue[DataContext, Option[Seq[GraphQLWork]]] = {
+    WorkResolver.worksByPersonId(personId)
       .map(_.map(_.map(new GraphQLWork(_))))
   }
 }

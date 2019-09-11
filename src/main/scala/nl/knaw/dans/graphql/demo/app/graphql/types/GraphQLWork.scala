@@ -27,21 +27,21 @@ class GraphQLWork(private val work: Work) {
 
   @GraphQLField
   @GraphQLDescription("The identifier with which this work is associated.")
-  def id()(implicit ctx: Context[DataContext, GraphQLWork]): WorkId = ctx.value.work.id
+  val id: WorkId = work.id
 
   @GraphQLField
   @GraphQLDescription("The work's title.")
-  def title()(implicit ctx: Context[DataContext, GraphQLWork]): String = ctx.value.work.title
+  val title: String = work.title
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO
 //  @GraphQLField
 //  @GraphQLDescription("List all authors of this work.")
-//  def authors()(implicit ctx: Context[DataContext, GraphQLWork]): Seq[GraphQLPerson] = {
+//  def authors(implicit ctx: Context[DataContext, GraphQLWork]): Seq[GraphQLPerson] = {
 //    // TODO note that this implementation is not optimized for deferred resolution
 //    //  `getPersonsByWork` would ideally also be wrapped in a `Fetcher`.
 //    //  However, Sangria is currently not able to compose instances of `DeferredValue`.
-//    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(ctx.value.id).getOrElse(Seq.empty)
+//    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(id).getOrElse(Seq.empty)
 //
 //    ctx.ctx.repo.personDao.find(personIds)
 //      .map(new GraphQLPerson(_))
@@ -49,11 +49,11 @@ class GraphQLWork(private val work: Work) {
 
   @GraphQLField
   @GraphQLDescription("List all authors of this work.")
-  def authors()(implicit ctx: Context[DataContext, GraphQLWork]): DeferredValue[DataContext, Seq[GraphQLPerson]] = {
+  def authors(implicit ctx: Context[DataContext, GraphQLWork]): DeferredValue[DataContext, Seq[GraphQLPerson]] = {
     // TODO note that this implementation is not optimized for deferred resolution
     //  `getPersonsByWork` would ideally also be wrapped in a `Fetcher`.
     //  However, Sangria is currently not able to compose instances of `DeferredValue`.
-    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(ctx.value.id).getOrElse(Seq.empty)
+    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(id).getOrElse(Seq.empty)
 
     PersonResolver.personsById(personIds)
       .map(_.map(new GraphQLPerson(_)))
