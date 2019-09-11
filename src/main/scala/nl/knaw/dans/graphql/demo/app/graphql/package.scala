@@ -21,7 +21,7 @@ import scala.language.implicitConversions
 
 package object graphql {
 
-  implicit def fromInput[T](create: Map[String, Any] => T): FromInput[T] = new FromInput[T] {
+  def fromInput[T](create: Map[String, Any] => T): FromInput[T] = new FromInput[T] {
     override val marshaller: ResultMarshaller = CoercedScalaResultMarshaller.default
 
     override def fromResult(node: marshaller.Node): T = create(node.asInstanceOf[Map[String, Any]])
