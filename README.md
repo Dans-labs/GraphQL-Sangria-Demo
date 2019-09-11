@@ -44,6 +44,7 @@ GRAPHQL INTERFACE
 
 GRAPHIQL TOOLS
 --------------
+
 To interact with the GraphQL servlet, use the internal http://localhost:20200/graphiql interface.
 Alternatively, on Mac, use the [GraphiQL.app](https://github.com/skevy/graphiql-app).
 
@@ -51,7 +52,7 @@ Alternatively, on Mac, use the [GraphiQL.app](https://github.com/skevy/graphiql-
 GRAPHQL SCHEMA
 --------------
 
-To generate the latest version of the GraphQL schema for `easy-deposit-properties`:
+To generate the latest version of the GraphQL schema for `graphql-sangria-demo`:
 
     #install get-graphql-schema
     npm install -g get-graphql-schema
