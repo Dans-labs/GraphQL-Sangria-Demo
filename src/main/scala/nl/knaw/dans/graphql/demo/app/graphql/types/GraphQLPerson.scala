@@ -42,6 +42,15 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLDescription("The city/town where this person lives.")
   def place()(implicit ctx: Context[DataContext, GraphQLPerson]): String = ctx.value.person.place
 
+  // NOTE: toggle between these 2 implementations and see the difference
+  //  in the number of interactions with the DAO
+//  @GraphQLField
+//  @GraphQLDescription("List all works of this person.")
+//  def works()(implicit ctx: Context[DataContext, GraphQLPerson]): Option[Seq[GraphQLWork]] = {
+//    ctx.ctx.repo.workDao.getByPersonId(ctx.value.person.personId)
+//      .map(_.map(new GraphQLWork(_)))
+//  }
+
   @GraphQLField
   @GraphQLDescription("List all works of this person.")
   def works()(implicit ctx: Context[DataContext, GraphQLPerson]): DeferredValue[DataContext, Option[Seq[GraphQLWork]]] = {

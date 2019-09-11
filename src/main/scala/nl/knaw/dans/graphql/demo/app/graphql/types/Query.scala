@@ -30,6 +30,16 @@ class Query {
       .map(new GraphQLPerson(_))
   }
 
+  // NOTE: toggle between these 2 implementations and see the difference
+  //  in the number of interactions with the DAO
+//  @GraphQLField
+//  @GraphQLDescription("Find the person identified with the given identifier.")
+//  def person(@GraphQLDescription("The identifier of the person to be found.") id: PersonId)
+//            (implicit ctx: Context[DataContext, Unit]): Option[GraphQLPerson] = {
+//    ctx.ctx.repo.personDao.find(id)
+//      .map(new GraphQLPerson(_))
+//  }
+
   @GraphQLField
   @GraphQLDescription("Find the person identified with the given identifier.")
   def person(@GraphQLDescription("The identifier of the person to be found.") id: PersonId)

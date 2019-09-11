@@ -33,6 +33,20 @@ class GraphQLWork(private val work: Work) {
   @GraphQLDescription("The work's title.")
   def title()(implicit ctx: Context[DataContext, GraphQLWork]): String = ctx.value.work.title
 
+  // NOTE: toggle between these 2 implementations and see the difference
+  //  in the number of interactions with the DAO
+//  @GraphQLField
+//  @GraphQLDescription("List all authors of this work.")
+//  def authors()(implicit ctx: Context[DataContext, GraphQLWork]): Seq[GraphQLPerson] = {
+//    // TODO note that this implementation is not optimized for deferred resolution
+//    //  `getPersonsByWork` would ideally also be wrapped in a `Fetcher`.
+//    //  However, Sangria is currently not able to compose instances of `DeferredValue`.
+//    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(ctx.value.id).getOrElse(Seq.empty)
+//
+//    ctx.ctx.repo.personDao.find(personIds)
+//      .map(new GraphQLPerson(_))
+//  }
+
   @GraphQLField
   @GraphQLDescription("List all authors of this work.")
   def authors()(implicit ctx: Context[DataContext, GraphQLWork]): DeferredValue[DataContext, Seq[GraphQLPerson]] = {
