@@ -19,31 +19,36 @@ import java.util.UUID
 
 import nl.knaw.dans.graphql.demo.app.model.{ InputPerson, Person, PersonId }
 import nl.knaw.dans.graphql.demo.app.repository.PersonDao
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.collection.mutable
 
-class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends PersonDao {
+class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends PersonDao with DebugEnhancedLogging {
 
   private val repo: mutable.Map[PersonId, Person] = mutable.Map(initalInput.toSeq: _*)
 
   override def getAll: Seq[Person] = {
+    trace(())
     repo.values.toSeq
   }
 
   override def find(id: PersonId): Option[Person] = {
+    trace(id)
     repo.get(id)
   }
 
   override def find(ids: Seq[PersonId]): Seq[Person] = {
+    trace(ids)
     ids.flatMap(repo.get)
   }
 
   override def store(person: InputPerson): Person = {
+    trace(person)
     val personId = UUID.randomUUID()
     val p = person.toPerson(personId)
-    
+
     repo += (personId -> p)
-    
+
     p
   }
 }

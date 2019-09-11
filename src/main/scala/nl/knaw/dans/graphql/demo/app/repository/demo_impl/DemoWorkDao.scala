@@ -19,37 +19,43 @@ import java.util.UUID
 
 import nl.knaw.dans.graphql.demo.app.model.{ InputWork, PersonId, Work, WorkId }
 import nl.knaw.dans.graphql.demo.app.repository.WorkDao
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.collection.mutable
 
 class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
                   initialLinks: Map[PersonId, List[WorkId]] = Map.empty,
-                 ) extends WorkDao {
+                 ) extends WorkDao with DebugEnhancedLogging {
 
   private val workRepo: mutable.Map[WorkId, Work] = mutable.Map(initialWorks.toSeq: _*)
   private val personWorkRepo: mutable.Map[PersonId, List[WorkId]] = mutable.Map(initialLinks.toSeq: _*)
 
   override def getById(id: WorkId): Option[Work] = {
+    trace(id)
     workRepo.get(id)
   }
 
   override def getById(ids: Seq[WorkId]): Seq[Work] = {
+    trace(ids)
     ids.flatMap(workRepo.get)
   }
 
   override def getByPersonId(id: PersonId): Option[Seq[Work]] = {
+    trace(id)
     findWorks(id)
   }
-  
+
   private def findWorks(id: PersonId): Option[Seq[Work]] = {
     personWorkRepo.get(id).map(_.flatMap(workRepo.get))
   }
 
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
+    trace(ids)
     ids.flatMap(personId => findWorks(personId).map(personId -> _))
   }
 
   override def store(personIds: Seq[PersonId], work: InputWork): Work = {
+    trace(personIds)
     val workId = UUID.randomUUID()
     val w = work.toWork(workId)
 
@@ -64,6 +70,7 @@ class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
   }
 
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = {
+    trace(id)
     if (workRepo.contains(id)) Some {
       personWorkRepo.collect { case (personId, workIds) if workIds.contains(id) => personId }.toSeq
     }
@@ -71,6 +78,7 @@ class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
   }
 
   override def getPersonsByWork(ids: Seq[WorkId]): Seq[(WorkId, Seq[PersonId])] = {
+    trace(ids)
     ids.flatMap(workId => getPersonsByWork(workId).map(workId -> _))
   }
 }
