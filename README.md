@@ -2,9 +2,6 @@ graphql-sangria-demo
 ===========
 [![Build Status](https://travis-ci.org/DANS-KNAW/graphql-sangria-demo.png?branch=master)](https://travis-ci.org/DANS-KNAW/graphql-sangria-demo)
 
-<!-- Remove this comment and extend the descriptions below -->
-
-
 SYNOPSIS
 --------
 
@@ -32,7 +29,36 @@ ARGUMENTS
 EXAMPLES
 --------
 
-    graphql-sangria-demo -o value
+    graphql-sangria-demo run-service
+
+
+GRAPHQL INTERFACE
+-----------------
+
+1. build `graphql-sangria-demo` using `mvn clean install`
+2. make sure the [dans-dev-tools](https://github.com/DANS-KNAW/dans-dev-tools) are installed properly
+3. call `run-reset-env.sh` from the root of the project
+4. call `run-service.sh` from the root of the project
+5. in your browser, go to http://localhost:20200/graphiql
+
+
+GRAPHIQL TOOLS
+--------------
+To interact with the GraphQL servlet, use the internal http://localhost:20200/graphiql interface.
+Alternatively, on Mac, use the [GraphiQL.app](https://github.com/skevy/graphiql-app).
+
+
+GRAPHQL SCHEMA
+--------------
+
+To generate the latest version of the GraphQL schema for `easy-deposit-properties`:
+
+    #install get-graphql-schema
+    npm install -g get-graphql-schema
+    
+    # (re)start the service (after: mvn clean install -DskipTests=true): see GRAPHQL INTERFACE above
+    
+    get-graphql-schema http://<base-url>/graphql > docs/schema.graphql
 
 
 INSTALLATION AND CONFIGURATION
