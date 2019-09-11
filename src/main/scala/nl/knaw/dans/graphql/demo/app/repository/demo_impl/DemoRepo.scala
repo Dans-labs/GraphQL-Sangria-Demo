@@ -25,6 +25,9 @@ class DemoRepo {
 
   private val pId1 = UUID.fromString("00000000-0000-0000-0000-000000000001")
   private val pId2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
+  private val pId3 = UUID.fromString("00000000-0000-0000-0000-000000000003")
+  private val pId4 = UUID.fromString("00000000-0000-0000-0000-000000000004")
+  private val pId5 = UUID.fromString("00000000-0000-0000-0000-000000000005")
 
   private val wId1 = UUID.fromString("10000000-0000-0000-0000-000000000000")
   private val wId2 = UUID.fromString("20000000-0000-0000-0000-000000000000")
@@ -34,6 +37,9 @@ class DemoRepo {
   private val personDao: PersonDao = new DemoPersonDao(Map(
     pId1 -> Person(pId1, "Alice", new LocalDate(1990, 1, 1), "London"),
     pId2 -> Person(pId2, "Bob", new LocalDate(1992, 2, 2), "Berlin"),
+    pId3 -> Person(pId3, "Charlie", new LocalDate(1994, 3, 3), "Paris"),
+    pId4 -> Person(pId4, "Dave", new LocalDate(1996, 4, 4), "Rome"),
+    pId5 -> Person(pId5, "Eve", new LocalDate(1998, 5, 5), "The Hague"),
   ))
   private val workDao: WorkDao = new DemoWorkDao(
     initialWorks = Map(
@@ -45,6 +51,9 @@ class DemoRepo {
     initialLinks = Map(
       pId1 -> List(wId1, wId3),
       pId2 -> List(wId1, wId2, wId3, wId4),
+      pId3 -> List(wId2, wId3),
+      pId4 -> List(wId1),
+      pId5 -> List(wId3, wId4),
     )
   )
 
