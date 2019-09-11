@@ -106,5 +106,6 @@ object GraphQLSchema {
     PersonResolver.byIdFetcher,
     WorkResolver.byIdFetcher,
     WorkResolver.byPersonIdFetcher,
+    WorkResolver.authorWorkIdFetcher,
   )
 }
