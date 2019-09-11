@@ -38,11 +38,15 @@ class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
   }
 
   override def getByPersonId(id: PersonId): Option[Seq[Work]] = {
+    findWorks(id)
+  }
+  
+  private def findWorks(id: PersonId): Option[Seq[Work]] = {
     personWorkRepo.get(id).map(_.flatMap(workRepo.get))
   }
 
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
-    ids.flatMap(personId => getByPersonId(personId).map(personId -> _))
+    ids.flatMap(personId => findWorks(personId).map(personId -> _))
   }
 
   override def store(personIds: Seq[PersonId], work: InputWork): Work = {
