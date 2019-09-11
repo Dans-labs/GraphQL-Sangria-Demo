@@ -30,10 +30,10 @@ class Mutation {
   }
 
   @GraphQLField
-  @GraphQLDescription("")
-  def addWork(@GraphQLDescription("") work: InputWork,
-              @GraphQLDescription("") personIds: Seq[PersonId],
+  @GraphQLDescription("Add a work together with it's authors.")
+  def addWork(@GraphQLDescription("The work's metadata.") work: InputWork,
+              @GraphQLDescription("The authors of the work.") authors: Seq[PersonId],
              )(implicit ctx: Context[DataContext, Unit]): GraphQLWork = {
-    GraphQLWork(ctx.ctx.repo.workDao.store(personIds, work))
+    GraphQLWork(ctx.ctx.repo.workDao.store(authors, work))
   }
 }

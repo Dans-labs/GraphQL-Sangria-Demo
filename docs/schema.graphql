@@ -25,7 +25,15 @@ type Mutation {
     """The person to be inserted."""
     person: InputPerson!
   ): Person!
-  addWork(work: InputWork!, personIds: [UUID!]!): Work!
+
+  """Add a work together with it's authors."""
+  addWork(
+    """The work's metadata."""
+    work: InputWork!
+
+    """The authors of the work."""
+    authors: [UUID!]!
+  ): Work!
 }
 
 """The object containing data about the person."""
