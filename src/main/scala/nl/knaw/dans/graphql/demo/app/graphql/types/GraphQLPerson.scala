@@ -17,7 +17,7 @@ package nl.knaw.dans.graphql.demo.app.graphql.types
 
 import nl.knaw.dans.graphql.demo.app.graphql.DataContext
 import nl.knaw.dans.graphql.demo.app.graphql.resolvers.WorkResolver
-import nl.knaw.dans.graphql.demo.app.model.{ Person, PersonId, Work }
+import nl.knaw.dans.graphql.demo.app.model.{ Person, PersonId }
 import org.joda.time.LocalDate
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
 import sangria.schema.{ Context, DeferredValue }
@@ -32,8 +32,9 @@ class GraphQLPerson(@GraphQLDescription("The identifier with which this person i
 
   @GraphQLField
   @GraphQLDescription("List all works of this person.")
-  def works()(implicit ctx: Context[DataContext, GraphQLPerson]): DeferredValue[DataContext, Option[Seq[Work]]] = {
+  def works()(implicit ctx: Context[DataContext, GraphQLPerson]): DeferredValue[DataContext, Option[Seq[GraphQLWork]]] = {
     WorkResolver.worksByPersonId(ctx.value.personId)
+      .map(_.map(_.map(GraphQLWork(_))))
   }
 }
 
