@@ -25,7 +25,7 @@ import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
 import sangria.macros.derive.{ DocumentInputField, _ }
 import sangria.marshalling.FromInput
-import sangria.schema.{ DeferredValue, InputObjectType, ObjectType, ScalarType, Schema }
+import sangria.schema.{ InputObjectType, ObjectType, ScalarType, Schema }
 import sangria.validation.{ StringCoercionViolation, ValueCoercionViolation, Violation }
 
 import scala.util.Try
