@@ -28,7 +28,7 @@ import org.scalatra._
 import sangria.ast.Document
 import sangria.execution._
 import sangria.marshalling.json4s.native._
-import sangria.parser.{ DeliveryScheme, QueryParser, SyntaxError }
+import sangria.parser.{ DeliveryScheme, ParserConfig, QueryParser, SyntaxError }
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future }
@@ -48,10 +48,13 @@ class GraphQLServlet(profilingThreshold: FiniteDuration,
 
   post("/") {
     contentType = "application/json"
+    val profiling = if (request.queryString contains "doProfile")
+                      Some(ProfilingConfiguration(profilingThreshold))
+                    else None
 
     val GraphQLInput(query, variables, operation) = Serialization.read[GraphQLInput](request.body)
-    val middlewares = new Middlewares(request.header("profile").map(_ => ProfilingConfiguration(profilingThreshold)))
-    QueryParser.parse(query)(DeliveryScheme.Either)
+    val middlewares = new Middlewares(profiling)
+    QueryParser.parse(query, ParserConfig.default.withoutComments)(DeliveryScheme.Either)
       .fold({
         case e: SyntaxError => Future.successful(BadRequest(syntaxError(e)))
         case e => Future.failed(e)
@@ -76,7 +79,7 @@ class GraphQLServlet(profilingThreshold: FiniteDuration,
     },
   )
 
-  private def execute(variables: Option[String], operation: Option[String], middlwares: Middlewares)(queryAst: Document): Future[ActionResult] = {
+  private def execute(variables: Option[String], operation: Option[String], middlewares: Middlewares)(queryAst: Document): Future[ActionResult] = {
     Executor.execute(
       schema = GraphQLSchema.schema,
       queryAst = queryAst,
@@ -85,7 +88,7 @@ class GraphQLServlet(profilingThreshold: FiniteDuration,
       variables = parseVariables(variables),
       deferredResolver = GraphQLSchema.deferredResolver,
       exceptionHandler = defaultExceptionHandler,
-      middleware = middlwares.values,
+      middleware = middlewares.values,
     )
       .map(Serialization.writePretty(_))
       .map(Ok(_))

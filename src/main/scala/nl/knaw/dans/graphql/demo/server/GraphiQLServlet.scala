@@ -30,6 +30,7 @@ class GraphiQLServlet(backendPath: String) extends ScalatraServlet {
      *   - removed unnecessary comments
      *   - add property 'schema: undefined' to the rendered GraphiQL Component
      *   - add property 'response: parameters.response' to the rendered GraphiQL Component
+     *   - introduce custom 'profile' button based on https://gist.github.com/OlegIlyenko/066475c919d3246c344e217aae36ccf4
      */
     contentType = "text/html"
     Ok {
@@ -45,11 +46,11 @@ class GraphiQLServlet(backendPath: String) extends ScalatraServlet {
           |    <link rel="shortcut icon" type="image/x-icon" href="https://easy.dans.knaw.nl/ui/images/lay-out/favicon.ico">
           |    <link href="//cdn.jsdelivr.net/npm/graphiql@0.13.0/graphiql.css" rel="stylesheet" />
           |
-          |    <script src="//cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+          |    <script src="//cdn.jsdelivr.net/npm/es6-promise@4.2.8/dist/es6-promise.auto.min.js"></script>
           |    <script src="//cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
-          |    <script src="//cdn.jsdelivr.net/npm/react@16.8.6/umd/react.production.min.js"></script>
-          |    <script src="//cdn.jsdelivr.net/npm/react-dom@16.8.6/umd/react-dom.production.min.js"></script>
-          |    <script src="//cdn.jsdelivr.net/npm/graphiql@0.13.0/graphiql.min.js"></script>
+          |    <script src="//cdn.jsdelivr.net/npm/react@16.9.0/umd/react.production.min.js"></script>
+          |    <script src="//cdn.jsdelivr.net/npm/react-dom@16.9.0/umd/react-dom.production.min.js"></script>
+          |    <script src="//cdn.jsdelivr.net/npm/graphiql@0.13.2/graphiql.min.js"></script>
           |
           |    <style>
           |      body {
@@ -69,7 +70,10 @@ class GraphiQLServlet(backendPath: String) extends ScalatraServlet {
           |    <script type="text/javascript">
           |      // Parse the search string to get url parameters.
           |      var search = window.location.search;
-          |      var parameters = {};
+          |      var parameters = {
+          |        graphiql: null,
+          |        doProfile: false,
+          |      };
           |      search.substr(1).split('&').forEach(function (entry) {
           |        var eq = entry.indexOf('=');
           |        if (eq >= 0) {
@@ -101,6 +105,12 @@ class GraphiQLServlet(backendPath: String) extends ScalatraServlet {
           |        parameters.operationName = newOperationName;
           |        updateURL();
           |      }
+          |      function onProfile() {
+          |        if (parameters.graphiql) {
+          |          parameters.doProfile = true;
+          |          parameters.graphiql._runQueryAtCursor();
+          |        }
+          |      }
           |      function updateURL() {
           |        var newSearch = '?' + Object.keys(parameters).filter(function (key) {
           |          return Boolean(parameters[key]);
@@ -111,7 +121,8 @@ class GraphiQLServlet(backendPath: String) extends ScalatraServlet {
           |        history.replaceState(null, null, newSearch);
           |      }
           |      function graphQLFetcher(graphQLParams) {
-          |        return fetch('$backendPath', {
+          |        var url = '$backendPath' + (parameters.doProfile ? '?doProfile' : '');
+          |        var result = fetch(url, {
           |          method: 'post',
           |          headers: {
           |            'Accept': 'application/json',
@@ -122,24 +133,69 @@ class GraphiQLServlet(backendPath: String) extends ScalatraServlet {
           |          return response.text();
           |        }).then(function (responseBody) {
           |          try {
-          |            return JSON.parse(responseBody);
+          |            var json = JSON.parse(responseBody);
+          |
+          |            if (parameters.graphiql && json.extensions && json.extensions.metrics) {
+          |              parameters.graphiql.getQueryEditor().setValue(json.extensions.metrics.query);
+          |              delete json.extensions;
+          |            }
+          |            else if (parameters.graphiql && json.extensions && json.extensions.formattedQuery) {
+          |              parameters.graphiql.getQueryEditor().setValue(json.extensions.formattedQuery);
+          |              delete json.extensions;
+          |            }
+          |
+          |            return json;
           |          } catch (error) {
           |            return responseBody;
           |          }
           |        });
+          |
+          |        parameters.doProfile = false;
+          |
+          |        return result;
           |      }
           |      ReactDOM.render(
-          |        React.createElement(GraphiQL, {
-          |          fetcher: graphQLFetcher,
-          |          schema: undefined,
-          |          query: parameters.query,
-          |          variables: parameters.variables,
-          |          response: parameters.response,
-          |          operationName: parameters.operationName,
-          |          onEditQuery: onEditQuery,
-          |          onEditVariables: onEditVariables,
-          |          onEditOperationName: onEditOperationName
-          |        }),
+          |        React.createElement(GraphiQL,
+          |          {
+          |            ref: function (x) {parameters.graphiql = x},
+          |            fetcher: graphQLFetcher,
+          |            schema: undefined,
+          |            query: parameters.query,
+          |            variables: parameters.variables,
+          |            response: parameters.response,
+          |            operationName: parameters.operationName,
+          |            onEditQuery: onEditQuery,
+          |            onEditVariables: onEditVariables,
+          |            onEditOperationName: onEditOperationName
+          |          },
+          |          React.createElement(GraphiQL.Toolbar, {},
+          |            React.createElement(GraphiQL.Button, {
+          |              onClick: function() {parameters.graphiql.handlePrettifyQuery()},
+          |              label: "Prettify",
+          |              title: "Prettify Query (Shift-Ctrl-P)"
+          |            }),
+          |            React.createElement(GraphiQL.Button, {
+          |              onClick: function() {parameters.graphiql.handleMergeQuery()},
+          |              label: "Merge",
+          |              title: "Merge Query (Shift-Ctrl-M)"
+          |            }),
+          |            React.createElement(GraphiQL.Button, {
+          |              onClick: function() {parameters.graphiql.handleCopyQuery()},
+          |              label: "Copy",
+          |              title: "Copy Query (Shift-Ctrl-C)"
+          |            }),
+          |            React.createElement(GraphiQL.Button, {
+          |              onClick: function() {parameters.graphiql.handleToggleHistory()},
+          |              label: "History",
+          |              title: "Show History"
+          |            }),
+          |            React.createElement(GraphiQL.Button, {
+          |              onClick: onProfile,
+          |              label: "Profile",
+          |              title: "Profile Query"
+          |            }),
+          |          ),
+          |        ),
           |        document.getElementById('graphiql')
           |      );
           |    </script>
