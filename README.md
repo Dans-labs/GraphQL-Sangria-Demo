@@ -89,6 +89,6 @@ Prerequisites:
 
 Steps:
 
-        git clone https://github.com/DANS-KNAW/graphql-sangria-demo.git
+        git clone https://github.com/Dans-labs/GraphQL-Sangria-Demo.git
         cd graphql-sangria-demo
         mvn install
