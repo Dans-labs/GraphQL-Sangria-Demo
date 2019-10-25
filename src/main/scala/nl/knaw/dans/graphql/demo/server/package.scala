@@ -15,7 +15,9 @@
  */
 package nl.knaw.dans.graphql.demo
 
+import org.json4s.JValue
+
 package object server {
 
-  case class GraphQLInput(query: String, variables: Option[String], operationName: Option[String])
+  case class GraphQLInput(query: String, variables: Option[JValue], operationName: Option[String])
 }
