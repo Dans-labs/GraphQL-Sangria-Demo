@@ -16,18 +16,26 @@
 package nl.knaw.dans.graphql.demo.app.graphql.types
 
 import nl.knaw.dans.graphql.demo.app.graphql.DataContext
+import nl.knaw.dans.graphql.demo.app.graphql.relay.ExtendedConnection
 import nl.knaw.dans.graphql.demo.app.graphql.resolvers.PersonResolver
 import nl.knaw.dans.graphql.demo.app.model.PersonId
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField }
+import sangria.relay.ConnectionArgs
 import sangria.schema.{ Context, DeferredValue }
 
 class Query {
 
   @GraphQLField
   @GraphQLDescription("List all known persons.")
-  def persons()(implicit ctx: Context[DataContext, Unit]): Seq[GraphQLPerson] = {
-    ctx.ctx.repo.personDao.getAll
-      .map(new GraphQLPerson(_))
+  def persons(before: Option[String] = None,
+              after: Option[String] = None,
+              first: Option[Int] = None,
+              last: Option[Int] = None,
+             )(implicit ctx: Context[DataContext, Unit]): ExtendedConnection[GraphQLPerson] = {
+    ExtendedConnection.connectionFromSeq(
+      ctx.ctx.repo.personDao.getAll.map(new GraphQLPerson(_)),
+      ConnectionArgs(before, after, first, last),
+    )
   }
 
   // NOTE: toggle between these 2 implementations and see the difference

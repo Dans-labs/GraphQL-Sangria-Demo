@@ -1,12 +1,20 @@
 query {
     persons {
-        personId
-        name
-        birthday
-        place
-        works {
-            id
-            title
+        edges {
+            node {
+                personId
+                name
+                birthday
+                place
+                works {
+                    edges {
+                        node {
+                            id
+                            title
+                        }
+                    }
+                }
+            }
         }
     }
 }

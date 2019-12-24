@@ -17,6 +17,7 @@ package nl.knaw.dans.graphql.demo.app.graphql
 
 import java.util.UUID
 
+import nl.knaw.dans.graphql.demo.app.graphql.relay.ExtendedConnection
 import nl.knaw.dans.graphql.demo.app.graphql.resolvers.{ PersonResolver, WorkResolver }
 import nl.knaw.dans.graphql.demo.app.graphql.types.{ GraphQLPerson, GraphQLWork, Mutation, Query }
 import nl.knaw.dans.graphql.demo.app.model.{ InputPerson, InputWork }
@@ -97,6 +98,10 @@ object GraphQLSchema {
   implicit val InputWorkFromInput: FromInput[InputWork] = fromInput(ad => InputWork(
     title = ad("title").asInstanceOf[String],
   ))
+
+  implicit def GeneralConnectionType[Ctx, T](implicit objType: ObjectType[Ctx, T]): ObjectType[Ctx, ExtendedConnection[T]] = {
+    ExtendedConnection.definition[Ctx, ExtendedConnection, T](objType.name, objType).connectionType
+  }
 
   implicit val QueryType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Query, Unit](_.query)
   implicit val MutationType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Mutation, Unit](_.mutation)

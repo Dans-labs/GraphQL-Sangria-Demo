@@ -5,11 +5,19 @@ query {
         birthday
         place
         works {
-            id
-            title
-            authors {
-                personId
-                name
+            edges {
+                node {
+                    id
+                    title
+                    authors {
+                        edges {
+                            node {
+                                personId
+                                name
+                            }
+                        }
+                    }
+                }
             }
         }
     }

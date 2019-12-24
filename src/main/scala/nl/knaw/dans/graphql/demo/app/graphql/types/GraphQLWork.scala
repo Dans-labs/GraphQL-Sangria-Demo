@@ -16,9 +16,11 @@
 package nl.knaw.dans.graphql.demo.app.graphql.types
 
 import nl.knaw.dans.graphql.demo.app.graphql.DataContext
+import nl.knaw.dans.graphql.demo.app.graphql.relay.ExtendedConnection
 import nl.knaw.dans.graphql.demo.app.graphql.resolvers.PersonResolver
 import nl.knaw.dans.graphql.demo.app.model.{ Work, WorkId }
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
+import sangria.relay.ConnectionArgs
 import sangria.schema.{ Context, DeferredValue }
 
 @GraphQLName("Work")
@@ -49,13 +51,20 @@ class GraphQLWork(private val work: Work) {
 
   @GraphQLField
   @GraphQLDescription("List all authors of this work.")
-  def authors(implicit ctx: Context[DataContext, GraphQLWork]): DeferredValue[DataContext, Seq[GraphQLPerson]] = {
+  def authors(before: Option[String] = None,
+              after: Option[String] = None,
+              first: Option[Int] = None,
+              last: Option[Int] = None,
+             )(implicit ctx: Context[DataContext, GraphQLWork]): DeferredValue[DataContext, ExtendedConnection[GraphQLPerson]] = {
     // TODO note that this implementation is not optimized for deferred resolution
     //  `getPersonsByWork` would ideally also be wrapped in a `Fetcher`.
     //  However, Sangria is currently not able to compose instances of `DeferredValue`.
     val personIds = ctx.ctx.repo.workDao.getPersonsByWork(id).getOrElse(Seq.empty)
 
     PersonResolver.personsById(personIds)
-      .map(_.map(new GraphQLPerson(_)))
+      .map(persons => ExtendedConnection.connectionFromSeq(
+        persons.map(new GraphQLPerson(_)),
+        ConnectionArgs(before, after, first, last),
+      ))
   }
 }
