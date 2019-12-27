@@ -7,7 +7,7 @@ query {
         works {
             edges {
                 node {
-                    id
+                    workId
                     title
                     authors {
                         edges {

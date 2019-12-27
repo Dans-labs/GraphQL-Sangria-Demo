@@ -109,7 +109,7 @@ scalar UUID
 """The object containing data about the work."""
 type Work {
   """The identifier with which this work is associated."""
-  id: UUID!
+  workId: UUID!
 
   """The work's title."""
   title: String!

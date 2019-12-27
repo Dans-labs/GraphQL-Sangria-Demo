@@ -9,7 +9,7 @@ query {
                 works {
                     edges {
                         node {
-                            id
+                            workId
                             title
                         }
                     }

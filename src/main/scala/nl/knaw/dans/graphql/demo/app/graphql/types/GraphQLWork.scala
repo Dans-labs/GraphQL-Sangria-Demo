@@ -29,7 +29,7 @@ class GraphQLWork(private val work: Work) {
 
   @GraphQLField
   @GraphQLDescription("The identifier with which this work is associated.")
-  val id: WorkId = work.id
+  val workId: WorkId = work.id
 
   @GraphQLField
   @GraphQLDescription("The work's title.")
@@ -59,7 +59,7 @@ class GraphQLWork(private val work: Work) {
     // TODO note that this implementation is not optimized for deferred resolution
     //  `getPersonsByWork` would ideally also be wrapped in a `Fetcher`.
     //  However, Sangria is currently not able to compose instances of `DeferredValue`.
-    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(id).getOrElse(Seq.empty)
+    val personIds = ctx.ctx.repo.workDao.getPersonsByWork(workId).getOrElse(Seq.empty)
 
     PersonResolver.personsById(personIds)
       .map(persons => ExtendedConnection.connectionFromSeq(
