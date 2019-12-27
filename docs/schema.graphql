@@ -36,6 +36,21 @@ type Mutation {
   ): Work!
 }
 
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
 """The object containing data about the person."""
 type Person {
   """The identifier with which this person is associated."""
@@ -51,12 +66,33 @@ type Person {
   place: String!
 
   """List all works of this person."""
-  works: [Work!]
+  works(before: String, after: String, first: Int, last: Int): WorkConnection
+}
+
+"""A connection to a list of items."""
+type PersonConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [PersonEdge]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type PersonEdge {
+  """The item at the end of the edge."""
+  node: Person!
+
+  """A cursor for use in pagination."""
+  cursor: String!
 }
 
 type Query {
   """List all known persons."""
-  persons: [Person!]!
+  persons(before: String, after: String, first: Int, last: Int): PersonConnection!
 
   """Find the person identified with the given identifier."""
   person(
@@ -79,6 +115,27 @@ type Work {
   title: String!
 
   """List all authors of this work."""
-  authors: [Person!]!
+  authors(before: String, after: String, first: Int, last: Int): PersonConnection!
+}
+
+"""A connection to a list of items."""
+type WorkConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [WorkEdge]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type WorkEdge {
+  """The item at the end of the edge."""
+  node: Work!
+
+  """A cursor for use in pagination."""
+  cursor: String!
 }
 
