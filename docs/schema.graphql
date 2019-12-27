@@ -36,6 +36,12 @@ type Mutation {
   ): Work!
 }
 
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
 """Information about pagination in a connection."""
 type PageInfo {
   """When paginating forwards, are there more items?"""
@@ -52,7 +58,7 @@ type PageInfo {
 }
 
 """The object containing data about the person."""
-type Person {
+type Person implements Node {
   """The identifier with which this person is associated."""
   personId: UUID!
 
@@ -67,6 +73,9 @@ type Person {
 
   """List all works of this person."""
   works(before: String, after: String, first: Int, last: Int): WorkConnection
+
+  """The ID of an object"""
+  id: ID!
 }
 
 """A connection to a list of items."""
@@ -99,6 +108,18 @@ type Query {
     """The identifier of the person to be found."""
     id: UUID!
   ): Person
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Fetches objects given their IDs"""
+  nodes(
+    """The IDs of objects"""
+    ids: [ID!]!
+  ): [Node]!
 }
 
 """
@@ -107,7 +128,7 @@ The UUID scalar type represents textual data, formatted as a universally unique 
 scalar UUID
 
 """The object containing data about the work."""
-type Work {
+type Work implements Node {
   """The identifier with which this work is associated."""
   workId: UUID!
 
@@ -116,6 +137,9 @@ type Work {
 
   """List all authors of this work."""
   authors(before: String, after: String, first: Int, last: Int): PersonConnection!
+
+  """The ID of an object"""
+  id: ID!
 }
 
 """A connection to a list of items."""

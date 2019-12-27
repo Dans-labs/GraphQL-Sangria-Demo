@@ -21,12 +21,12 @@ import nl.knaw.dans.graphql.demo.app.graphql.resolvers.WorkResolver
 import nl.knaw.dans.graphql.demo.app.model.{ Person, PersonId }
 import org.joda.time.LocalDate
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
-import sangria.relay.ConnectionArgs
+import sangria.relay.{ ConnectionArgs, Node }
 import sangria.schema.{ Context, DeferredValue }
 
 @GraphQLName("Person")
 @GraphQLDescription("The object containing data about the person.")
-class GraphQLPerson(private val person: Person) {
+class GraphQLPerson(private val person: Person) extends Node {
 
   @GraphQLField
   @GraphQLDescription("The identifier with which this person is associated.")
@@ -43,6 +43,8 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLField
   @GraphQLDescription("The city/town where this person lives.")
   val place: String = person.place
+
+  override val id: String = personId.toString
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO

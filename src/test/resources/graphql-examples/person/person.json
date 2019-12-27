@@ -1,6 +1,7 @@
 {
   "data": {
     "person": {
+      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMQ==",
       "personId": "00000000-0000-0000-0000-000000000001",
       "name": "Alice",
       "birthday": "1990-01-01",
@@ -9,24 +10,28 @@
         "edges": [
           {
             "node": {
+              "id": "V29yazoxMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA=",
               "workId": "10000000-0000-0000-0000-000000000000",
               "title": "title1",
               "authors": {
                 "edges": [
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMg==",
                       "personId": "00000000-0000-0000-0000-000000000002",
                       "name": "Bob"
                     }
                   },
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwNA==",
                       "personId": "00000000-0000-0000-0000-000000000004",
                       "name": "Dave"
                     }
                   },
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMQ==",
                       "personId": "00000000-0000-0000-0000-000000000001",
                       "name": "Alice"
                     }
@@ -37,30 +42,35 @@
           },
           {
             "node": {
+              "id": "V29yazozMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA=",
               "workId": "30000000-0000-0000-0000-000000000000",
               "title": "title3",
               "authors": {
                 "edges": [
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMg==",
                       "personId": "00000000-0000-0000-0000-000000000002",
                       "name": "Bob"
                     }
                   },
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwNQ==",
                       "personId": "00000000-0000-0000-0000-000000000005",
                       "name": "Eve"
                     }
                   },
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMQ==",
                       "personId": "00000000-0000-0000-0000-000000000001",
                       "name": "Alice"
                     }
                   },
                   {
                     "node": {
+                      "id": "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMw==",
                       "personId": "00000000-0000-0000-0000-000000000003",
                       "name": "Charlie"
                     }

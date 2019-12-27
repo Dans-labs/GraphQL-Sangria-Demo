@@ -20,12 +20,12 @@ import nl.knaw.dans.graphql.demo.app.graphql.relay.ExtendedConnection
 import nl.knaw.dans.graphql.demo.app.graphql.resolvers.PersonResolver
 import nl.knaw.dans.graphql.demo.app.model.{ Work, WorkId }
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
-import sangria.relay.ConnectionArgs
+import sangria.relay.{ ConnectionArgs, Node }
 import sangria.schema.{ Context, DeferredValue }
 
 @GraphQLName("Work")
 @GraphQLDescription("The object containing data about the work.")
-class GraphQLWork(private val work: Work) {
+class GraphQLWork(private val work: Work) extends Node {
 
   @GraphQLField
   @GraphQLDescription("The identifier with which this work is associated.")
@@ -34,6 +34,8 @@ class GraphQLWork(private val work: Work) {
   @GraphQLField
   @GraphQLDescription("The work's title.")
   val title: String = work.title
+
+  override val id: String = workId.toString
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO

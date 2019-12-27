@@ -2,6 +2,7 @@ query {
     persons {
         edges {
             node {
+                id
                 personId
                 name
                 birthday
@@ -9,6 +10,7 @@ query {
                 works {
                     edges {
                         node {
+                            id
                             workId
                             title
                         }

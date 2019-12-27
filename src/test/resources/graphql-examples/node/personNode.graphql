@@ -1,0 +1,8 @@
+query {
+    node(id: "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMw==") {
+        ... on Person {
+            personId
+            name
+        }
+    }
+}

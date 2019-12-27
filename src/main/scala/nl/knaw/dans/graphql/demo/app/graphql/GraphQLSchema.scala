@@ -26,7 +26,8 @@ import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
 import sangria.macros.derive.{ DocumentInputField, _ }
 import sangria.marshalling.FromInput
-import sangria.schema.{ InputObjectType, ObjectType, ScalarType, Schema }
+import sangria.relay.{ GlobalId, Node, NodeDefinition }
+import sangria.schema.{ Context, InputObjectType, ObjectType, ScalarType, Schema }
 import sangria.validation.{ StringCoercionViolation, ValueCoercionViolation, Violation }
 
 import scala.util.Try
@@ -77,7 +78,23 @@ object GraphQLSchema {
     )
   }
 
-  implicit val GraphQLPersonType: ObjectType[DataContext, GraphQLPerson] = deriveObjectType[DataContext, GraphQLPerson]()
+  val NodeDefinition(nodeInterface, node, nodes) = Node.definition(
+    resolve = (globalId: GlobalId, ctx: Context[DataContext, Unit]) => {
+      globalId.typeName match {
+        case GraphQLPersonType.name =>
+          ctx.ctx.repo.personDao.find(UUID.fromString(globalId.id)).map(new GraphQLPerson(_))
+        case GraphQLWorkType.name =>
+          ctx.ctx.repo.workDao.getById(UUID.fromString(globalId.id)).map(new GraphQLWork(_))
+        case _ => None
+      }
+    },
+    possibleTypes = Node.possibleNodeTypes[DataContext, Node](GraphQLPersonType, GraphQLWorkType),
+  )
+
+  implicit lazy val GraphQLPersonType: ObjectType[DataContext, GraphQLPerson] = deriveObjectType[DataContext, GraphQLPerson](
+    Interfaces(nodeInterface),
+    AddFields(Node.globalIdField),
+  )
   implicit val InputPersonType: InputObjectType[InputPerson] = deriveInputObjectType[InputPerson](
     InputObjectTypeDescription("The person to be inserted."),
     DocumentInputField("name", "The person's name."),
@@ -90,7 +107,10 @@ object GraphQLSchema {
     place = ad("place").asInstanceOf[String],
   ))
 
-  implicit val GraphQLWorkType: ObjectType[DataContext, GraphQLWork] = deriveObjectType[DataContext, GraphQLWork]()
+  implicit lazy val GraphQLWorkType: ObjectType[DataContext, GraphQLWork] = deriveObjectType[DataContext, GraphQLWork](
+    Interfaces(nodeInterface),
+    AddFields(Node.globalIdField),
+  )
   implicit val InputWorkType: InputObjectType[InputWork] = deriveInputObjectType[InputWork](
     InputObjectTypeDescription("The work to be inserted."),
     DocumentInputField("title", "The work's title."),
@@ -103,7 +123,10 @@ object GraphQLSchema {
     ExtendedConnection.definition[Ctx, ExtendedConnection, T](objType.name, objType).connectionType
   }
 
-  implicit val QueryType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Query, Unit](_.query)
+  implicit val QueryType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Query, Unit](
+    _.query,
+    AddFields(node, nodes),
+  )
   implicit val MutationType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Mutation, Unit](_.mutation)
 
   val schema: Schema[DataContext, Unit] = Schema[DataContext, Unit](QueryType, mutation = Option(MutationType))

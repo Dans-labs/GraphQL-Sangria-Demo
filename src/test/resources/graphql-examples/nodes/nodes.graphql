@@ -1,0 +1,15 @@
+query {
+    nodes(ids: [
+        "UGVyc29uOjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMw==",
+        "V29yazoxMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA="
+    ]) {
+        ... on Person {
+            personId
+            name
+        }
+        ... on Work {
+            workId
+            title
+        }
+    }
+}

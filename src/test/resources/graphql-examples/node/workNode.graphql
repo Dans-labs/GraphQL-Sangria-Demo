@@ -1,0 +1,8 @@
+query {
+    node(id: "V29yazoxMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDA=") {
+        ... on Work {
+            workId
+            title
+        }
+    }
+}
